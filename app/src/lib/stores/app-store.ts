@@ -440,6 +440,8 @@ const customEditorKey = 'custom-editor'
 export const useCustomShellKey = 'use-custom-shell'
 const customShellKey = 'custom-shell'
 
+export const openAIAPIKeyKey = 'openai-api-key'
+
 export const underlineLinksKey = 'underline-links'
 export const underlineLinksDefault = true
 
@@ -583,6 +585,8 @@ export class AppStore extends TypedBaseStore<IAppState> {
 
   private useCustomShell: boolean = false
   private customShell: ICustomIntegration | null = null
+
+  private openAIAPIKey: string = ''
 
   private showCIStatusPopover: boolean = false
 
@@ -1085,6 +1089,7 @@ export class AppStore extends TypedBaseStore<IAppState> {
       customEditor: this.customEditor,
       useCustomShell: this.useCustomShell,
       customShell: this.customShell,
+      openAIAPIKey: this.openAIAPIKey,
       showCIStatusPopover: this.showCIStatusPopover,
       notificationsEnabled: getNotificationsEnabled(),
       pullRequestSuggestedNextAction: this.pullRequestSuggestedNextAction,
@@ -2293,6 +2298,9 @@ export class AppStore extends TypedBaseStore<IAppState> {
     this.useCustomShell =
       enableCustomIntegration() && getBoolean(useCustomShellKey, false)
     this.customShell = getObject<ICustomIntegration>(customShellKey) ?? null
+
+    this.openAIAPIKey =
+      getObject<{ openAIAPIKey: string }>(openAIAPIKeyKey)?.openAIAPIKey ?? ''
 
     // Migrate custom editor and shell to the new format if needed. This
     // will persist the new format to local storage.
@@ -7345,6 +7353,12 @@ export class AppStore extends TypedBaseStore<IAppState> {
   public _setCustomShell(customShell: ICustomIntegration) {
     setObject(customShellKey, customShell)
     this.customShell = customShell
+    this.emitUpdate()
+  }
+
+  public _setOpenAIAPIKey(openAIAPIKey: string) {
+    setObject(openAIAPIKeyKey, { openAIAPIKey })
+    this.openAIAPIKey = openAIAPIKey
     this.emitUpdate()
   }
 

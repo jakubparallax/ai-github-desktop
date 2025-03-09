@@ -3239,6 +3239,10 @@ export class Dispatcher {
     this.appStore._setCustomShell(customShell)
   }
 
+  public setOpenAIAPIKey(openAIAPIKey: string) {
+    this.appStore._setOpenAIAPIKey(openAIAPIKey)
+  }
+
   public async reorderCommits(
     repository: Repository,
     commitsToReorder: ReadonlyArray<Commit>,

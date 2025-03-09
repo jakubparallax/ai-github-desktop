@@ -1561,6 +1561,7 @@ export class App extends React.Component<IAppProps, IAppState> {
             customEditor={this.state.customEditor}
             useCustomShell={this.state.useCustomShell}
             customShell={this.state.customShell}
+            openAIAPIKey={this.state.openAIAPIKey}
             repositoryIndicatorsEnabled={this.state.repositoryIndicatorsEnabled}
             onEditGlobalGitConfig={this.editGlobalGitConfig}
             underlineLinks={this.state.underlineLinks}
@@ -3263,6 +3264,7 @@ export class App extends React.Component<IAppProps, IAppState> {
           onCherryPick={this.startCherryPickWithoutBranch}
           pullRequestSuggestedNextAction={state.pullRequestSuggestedNextAction}
           canFilterChanges={state.canFilterChanges}
+          openAIAPIKey={this.state.openAIAPIKey}
         />
       )
     } else if (selectedState.type === SelectionType.CloningRepository) {

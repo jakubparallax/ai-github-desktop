@@ -225,6 +225,8 @@ interface IChangesListProps {
   readonly showCommitLengthWarning: boolean
 
   readonly accounts: ReadonlyArray<Account>
+
+  readonly openAIAPIKey?: string
 }
 
 interface IChangesState {
@@ -865,6 +867,7 @@ export class ChangesList extends React.Component<
         onStopAmending={this.onStopAmending}
         onShowCreateForkDialog={this.onShowCreateForkDialog}
         accounts={this.props.accounts}
+        openAIAPIKey={this.props.openAIAPIKey}
       />
     )
   }

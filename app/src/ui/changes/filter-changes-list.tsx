@@ -206,6 +206,8 @@ interface IFilterChangesListProps {
   readonly showCommitLengthWarning: boolean
 
   readonly accounts: ReadonlyArray<Account>
+
+  readonly openAIAPIKey?: string
 }
 
 interface IFilterChangesListState {
@@ -973,6 +975,7 @@ export class FilterChangesList extends React.Component<
         onFilesToCommitNotVisible={this.onFilesToCommitNotVisible}
         accounts={this.props.accounts}
         onSuccessfulCommitCreated={this.onSuccessfulCommitCreated}
+        openAIAPIKey={this.props.openAIAPIKey}
       />
     )
   }

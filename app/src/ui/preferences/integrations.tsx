@@ -3,6 +3,7 @@ import { DialogContent } from '../dialog'
 import { LinkButton } from '../lib/link-button'
 import { Row } from '../../ui/lib/row'
 import { Select } from '../lib/select'
+import { TextBox } from '../lib/text-box'
 import { Shell, parse as parseShell } from '../../lib/shells'
 import { suggestedExternalEditor } from '../../lib/editors/shared'
 import { CustomIntegrationForm } from './custom-integration-form'
@@ -20,12 +21,14 @@ interface IIntegrationsPreferencesProps {
   readonly customEditor: ICustomIntegration
   readonly useCustomShell: boolean
   readonly customShell: ICustomIntegration
+  readonly openAIAPIKey: string
   readonly onSelectedEditorChanged: (editor: string) => void
   readonly onSelectedShellChanged: (shell: Shell) => void
   readonly onUseCustomEditorChanged: (useCustomEditor: boolean) => void
   readonly onCustomEditorChanged: (customEditor: ICustomIntegration) => void
   readonly onUseCustomShellChanged: (useCustomShell: boolean) => void
   readonly onCustomShellChanged: (customShell: ICustomIntegration) => void
+  readonly onOpenAIAPIKeyChanged: (openAIAPIKey: string) => void
 }
 
 interface IIntegrationsPreferencesState {
@@ -35,6 +38,7 @@ interface IIntegrationsPreferencesState {
   readonly customEditor: ICustomIntegration
   readonly useCustomShell: boolean
   readonly customShell: ICustomIntegration
+  readonly openAIAPIKey: string
 }
 
 export class Integrations extends React.Component<
@@ -54,6 +58,7 @@ export class Integrations extends React.Component<
       customEditor: this.props.customEditor,
       useCustomShell: this.props.useCustomShell,
       customShell: this.props.customShell,
+      openAIAPIKey: this.props.openAIAPIKey,
     }
   }
 
@@ -292,7 +297,7 @@ export class Integrations extends React.Component<
 
     return (
       <Select
-        label={enableCustomIntegration() ? undefined : 'Shell'}
+        label={enableCustomIntegration() ? undefined : 'Shells'}
         aria-label="Shell"
         value={useCustomShell ? CustomIntegrationValue : selectedShell}
         onChange={this.onSelectedShellChanged}
@@ -302,6 +307,7 @@ export class Integrations extends React.Component<
             {n}
           </option>
         ))}
+
         {enableCustomIntegration() && (
           <option key={CustomIntegrationValue} value={CustomIntegrationValue}>
             {__DARWIN__ ? 'Configure Custom Shell…' : 'Configure custom shell…'}
@@ -348,6 +354,20 @@ export class Integrations extends React.Component<
     this.props.onCustomShellChanged(customShell)
   }
 
+  private onOpenAIAPIKeyChanged = (value: string) => {
+    this.setState({ openAIAPIKey: value })
+    this.props.onOpenAIAPIKeyChanged(value)
+  }
+
+  private renderOpenAIAPIKey() {
+    return (
+      <TextBox
+        value={this.props.openAIAPIKey}
+        onValueChanged={this.onOpenAIAPIKeyChanged}
+      />
+    )
+  }
+
   public render() {
     if (!enableCustomIntegration()) {
       return (
@@ -375,6 +395,12 @@ export class Integrations extends React.Component<
           </legend>
           <Row>{this.renderSelectedShell()}</Row>
           {this.state.useCustomShell && this.renderCustomShell()}
+        </fieldset>
+        <fieldset>
+          <legend>
+            <h2>OpenAI API Key</h2>
+          </legend>
+          <Row>{this.renderOpenAIAPIKey()}</Row>
         </fieldset>
       </DialogContent>
     )

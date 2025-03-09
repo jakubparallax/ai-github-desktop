@@ -347,6 +347,9 @@ export interface IAppState {
   /** Info needed to launch a custom shell chosen by the user. */
   readonly customShell: ICustomIntegration | null
 
+  /** The user's OpenAI API key. */
+  readonly openAIAPIKey: string
+
   /**
    * Whether or not the CI status popover is visible.
    */

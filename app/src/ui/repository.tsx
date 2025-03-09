@@ -111,6 +111,8 @@ interface IRepositoryViewProps {
   readonly pullRequestSuggestedNextAction?: PullRequestSuggestedNextAction
 
   readonly canFilterChanges: boolean
+
+  readonly openAIAPIKey?: string
 }
 
 interface IRepositoryViewState {
@@ -269,6 +271,7 @@ export class RepositoryView extends React.Component<
         commitSpellcheckEnabled={this.props.commitSpellcheckEnabled}
         showCommitLengthWarning={this.props.showCommitLengthWarning}
         canFilterChanges={this.props.canFilterChanges}
+        openAIAPIKey={this.props.openAIAPIKey}
       />
     )
   }

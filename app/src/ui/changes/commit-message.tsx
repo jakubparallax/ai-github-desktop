@@ -6,6 +6,7 @@ import {
   IAutocompletionProvider,
   CoAuthorAutocompletionProvider,
 } from '../autocompletion'
+import OpenAI from 'openai'
 import { CommitIdentity } from '../../models/commit-identity'
 import { ICommitMessage } from '../../models/commit-message'
 import { Repository } from '../../models/repository'
@@ -109,6 +110,9 @@ interface ICommitMessageProps {
   readonly aheadBehind: IAheadBehind | null
   readonly showNoWriteAccess: boolean
 
+  /** The OpenAI API key used for AI-assisted commit features */
+  readonly openAIAPIKey?: string
+
   /**
    * Whether or not to show a field for adding co-authors to
    * a commit (currently only supported for GH/GHE repositories)
@@ -204,6 +208,8 @@ interface ICommitMessageState {
   readonly repoRuleCommitMessageFailures: RepoRulesMetadataFailures
   readonly repoRuleCommitAuthorFailures: RepoRulesMetadataFailures
   readonly repoRuleBranchNameFailures: RepoRulesMetadataFailures
+
+  readonly isGeneratingCommitMessage: boolean
 }
 
 function findCommitMessageAutoCompleteProvider(
@@ -260,6 +266,7 @@ export class CommitMessage extends React.Component<
       repoRuleCommitMessageFailures: new RepoRulesMetadataFailures(),
       repoRuleCommitAuthorFailures: new RepoRulesMetadataFailures(),
       repoRuleBranchNameFailures: new RepoRulesMetadataFailures(),
+      isGeneratingCommitMessage: false,
     }
   }
 
@@ -839,6 +846,42 @@ export class CommitMessage extends React.Component<
     )
   }
 
+  private generateCommitMessage = () => {
+    // Check if API key exists
+    if (!this.props.openAIAPIKey) {
+      this.props.onShowPopup({
+        type: PopupType.Preferences,
+        initialSelectedTab: PreferencesTab.Integrations,
+      })
+      return
+    }
+
+    this.setState({ isGeneratingCommitMessage: true })
+    ;(async () => {
+      const client = new OpenAI({
+        apiKey: this.props.openAIAPIKey,
+        dangerouslyAllowBrowser: true,
+      })
+
+      const chatCompletion = await client.chat.completions.create({
+        messages: [
+          {
+            role: 'user',
+            content: 'generate a random commit message under 50 characters',
+          },
+        ],
+        model: 'gpt-4o-mini-2024-07-18',
+      })
+
+      this.setState({
+        summary: chatCompletion.choices[0].message.content ?? 'Error',
+        description: '',
+      })
+
+      this.setState({ isGeneratingCommitMessage: false })
+    })()
+  }
+
   private onDescriptionFieldRef = (
     component: AutocompletingTextArea | null
   ) => {
@@ -1403,18 +1446,23 @@ export class CommitMessage extends React.Component<
           {showSummaryLengthHint && this.renderSummaryLengthHint()}
           <Button
             size="normal"
-            // onClick={this.props.onUndo}
+            onClick={this.generateCommitMessage}
             tooltip={'Autocomplete commit message'}
+            disabled={this.state.isGeneratingCommitMessage}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="#FFF"
-              viewBox="0 0 256 256"
-            >
-              <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
-            </svg>
+            {this.state.isGeneratingCommitMessage ? (
+              <Loading />
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="#FFF"
+                viewBox="0 0 256 256"
+              >
+                <path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"></path>
+              </svg>
+            )}
           </Button>
         </div>
 

@@ -83,6 +83,7 @@ interface IPreferencesProps {
   readonly underlineLinks: boolean
   readonly showDiffCheckMarks: boolean
   readonly canFilterChanges: boolean
+  readonly openAIAPIKey: string
 }
 
 interface IPreferencesState {
@@ -116,6 +117,7 @@ interface IPreferencesState {
   readonly selectedExternalEditor: string | null
   readonly availableShells: ReadonlyArray<Shell>
   readonly selectedShell: Shell
+  readonly openAIAPIKey: string
 
   /**
    * If unable to save Git configuration values (name, email)
@@ -171,6 +173,7 @@ export class Preferences extends React.Component<
       customEditor: this.props.customEditor ?? DefaultCustomIntegration,
       useCustomShell: this.props.useCustomShell,
       customShell: this.props.customShell ?? DefaultCustomIntegration,
+      openAIAPIKey: this.props.openAIAPIKey,
       useWindowsOpenSSH: false,
       showCommitLengthWarning: false,
       notificationsEnabled: true,
@@ -420,6 +423,8 @@ export class Preferences extends React.Component<
             onCustomEditorChanged={this.onCustomEditorChanged}
             onUseCustomShellChanged={this.onUseCustomShellChanged}
             onCustomShellChanged={this.onCustomShellChanged}
+            openAIAPIKey={this.state.openAIAPIKey}
+            onOpenAIAPIKeyChanged={this.onOpenAIAPIKeyChanged}
           />
         )
         break
@@ -680,6 +685,10 @@ export class Preferences extends React.Component<
     this.setState({ customShell })
   }
 
+  private onOpenAIAPIKeyChanged = (openAIAPIKey: string) => {
+    this.setState({ openAIAPIKey })
+  }
+
   private onSelectedThemeChanged = (theme: ApplicationTheme) => {
     this.props.dispatcher.setSelectedTheme(theme)
   }
@@ -791,6 +800,8 @@ export class Preferences extends React.Component<
     if (isValidCustomShell) {
       dispatcher.setCustomShell(customShell)
     }
+
+    dispatcher.setOpenAIAPIKey(this.state.openAIAPIKey)
 
     if (
       this.props.useExternalCredentialHelper !==

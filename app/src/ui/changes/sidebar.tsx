@@ -69,6 +69,7 @@ interface IChangesSidebarProps {
   readonly isShowingFoldout: boolean
   /** The name of the currently selected external editor */
   readonly externalEditorLabel?: string
+  readonly openAIAPIKey?: string
 
   /**
    * Callback to open a selected file using the configured external editor
@@ -458,6 +459,7 @@ export class ChangesSidebar extends React.Component<IChangesSidebarProps, {}> {
           currentRepoRulesInfo={currentRepoRulesInfo}
           aheadBehind={this.props.aheadBehind}
           accounts={this.props.accounts}
+          openAIAPIKey={this.props.openAIAPIKey}
         />
         {this.renderUndoCommit(rebaseConflictState)}
       </div>
